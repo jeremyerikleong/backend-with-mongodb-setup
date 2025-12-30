@@ -1,0 +1,17 @@
+{
+  "name": "intro-to-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch ./src/index.js"
+  },
+  "author": "jeremy",
+  "license": "ISC",
+  "description": "A basic backend with mongoDB setup",
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.1.0"
+  }
+}
