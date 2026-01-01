@@ -44,13 +44,10 @@ export async function registerUser(req, res) {
             });
         }
 
-        const saltRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltRounds);
-
         const user = new User({
             username,
             email: email.toLowerCase(),
-            password: hashedPassword,
+            password,
             loggedIn: false,
         });
 
