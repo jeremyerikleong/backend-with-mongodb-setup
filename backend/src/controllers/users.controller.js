@@ -26,6 +26,13 @@ export async function registerUser(req, res) {
             });
         }
 
+        if (password.length < 8 || password.length > 20) {
+            return res.status(400).json({
+                status: 'error',
+                message: "Password must be 8–20 characters"
+            });
+        }
+
         const existingUser = await User.findOne({
             email: email.toLowerCase()
         });
@@ -40,17 +47,19 @@ export async function registerUser(req, res) {
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const user = await User.create({
+        const user = new User({
             username,
             email: email.toLowerCase(),
             password: hashedPassword,
             loggedIn: false,
         });
 
+        await user.save();
+
         res.status(201).json({
             status: 'success',
             message: 'successfully registered an account',
-            user: { id: user._id, email: user.email, username: user.username }
+            data: { id: user._id, email: user.email, username: user.username }
         });
     } catch (err) {
         res.status(500).json({
