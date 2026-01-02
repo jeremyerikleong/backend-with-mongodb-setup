@@ -7,29 +7,37 @@ export async function registerUser(req, res) {
 
         if (!username) {
             return res.status(400).json({
-                status: 'error',
-                message: 'username is required'
+                status: 'fail',
+                data: {
+                    message: 'username is required'
+                }
             });
         }
 
         if (!email) {
             return res.status(400).json({
-                status: 'error',
-                message: 'email is required'
+                status: 'fail',
+                data: {
+                    message: 'email is required'
+                }
             });
         }
 
         if (!password) {
             return res.status(400).json({
-                status: 'error',
-                message: 'password is required'
+                status: 'fail',
+                data: {
+                    message: 'password is required'
+                }
             });
         }
 
         if (password.length < 8 || password.length > 20) {
             return res.status(400).json({
-                status: 'error',
-                message: "Password must be 8–20 characters"
+                status: 'fail',
+                data: {
+                    message: "Password must be 8–20 characters"
+                }
             });
         }
 
@@ -39,8 +47,10 @@ export async function registerUser(req, res) {
 
         if (existingUser) {
             return res.status(409).json({
-                status: 'error',
-                message: 'user already exists!, try login'
+                status: 'fail',
+                data: {
+                    message: 'user already exists!, try login'
+                }
             });
         }
 
@@ -55,14 +65,12 @@ export async function registerUser(req, res) {
 
         res.status(201).json({
             status: 'success',
-            message: 'successfully registered an account',
             data: { id: user._id, email: user.email, username: user.username }
         });
     } catch (err) {
         res.status(500).json({
             status: 'error',
             message: 'Internal server error',
-            error: err.message
         });
     }
 }
@@ -77,16 +85,20 @@ export async function loginUser(req, res) {
 
         if (!user) {
             return res.status(400).json({
-                status: 'error',
-                message: 'User not found'
+                status: 'fail',
+                data: {
+                    message: 'User not found'
+                }
             });
         }
 
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             return res.status(400).json({
-                status: 'error',
-                message: 'Invalid email or password'
+                status: 'fail',
+                data: {
+                    message: 'Invalid email or password'
+                }
             });
         }
 
@@ -96,14 +108,46 @@ export async function loginUser(req, res) {
 
         res.status(200).json({
             status: 'success',
-            message: 'login successfully',
-            token,
-            user: {
-                id: user._id,
-                email: user.email,
-                username: user.username
+            data: {
+                token,
+                user: {
+                    id: user._id,
+                    email: user.email,
+                    username: user.username
+                }
             }
         });
+    } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
+}
+
+export async function logoutUser(req, res) {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({
+            email
+        })
+
+        if (!user) {
+            return res.status(404).json({
+                status: 'fail',
+                data: {
+                    message: 'User not found'
+                }
+            })
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                message: 'You have successfully logged out'
+            }
+        })
     } catch (err) {
         res.status(500).json({
             status: 'error',
