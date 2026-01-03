@@ -114,7 +114,7 @@ export async function updatePost(req, res) {
             });
         }
 
-        const { id } = req.params
+        const { id } = req.params;
         const post = await Post.findByIdAndUpdate(id, req.body, { new: true });
 
         if (!post) {
@@ -134,6 +134,38 @@ export async function updatePost(req, res) {
             }
         });
     } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
+    }
+}
+
+export async function deletePost(req, res) {
+    try {
+
+        const { id } = req.params;
+        const post = await Post.findByIdAndDelete(id);
+
+        if (!post) {
+            return res.status(404).json({
+                status: 'fail',
+                data: {
+                    message: 'No post found'
+                }
+            });
+        }
+
+        res.status(204).send();
+    } catch (err) {
+        if (err.name === 'CastError') {
+            return res.status(400).json({
+                status: 'fail',
+                data: {
+                    message: 'Invalid post id'
+                }
+            });
+        }
         res.status(500).json({
             status: 'error',
             message: 'Internal server error'
