@@ -11,13 +11,13 @@ export async function getAllPosts(req, res) {
                     posts,
                     results: posts.length
                 },
-            })
+            });
         }
     } catch (err) {
         res.status(500).json({
             status: 'error',
             message: 'Internal server error'
-        })
+        });
     }
 }
 
@@ -54,7 +54,7 @@ export async function getPostById(req, res) {
         res.status(500).json({
             status: 'error',
             message: 'Internal server error'
-        })
+        });
     }
 }
 
@@ -101,6 +101,42 @@ export async function createPost(req, res) {
         res.status(500).json({
             status: 'error',
             message: 'Internal server error'
-        })
+        });
+    }
+}
+
+export async function updatePost(req, res) {
+    try {
+        if (Object.keys(req.body).length === 0) {
+            return res.status(400).json({
+                status: 'fail',
+                message: 'No data was provided to update the resource'
+            });
+        }
+
+        const { id } = req.params
+        const post = await Post.findByIdAndUpdate(id, req.body, { new: true });
+
+        if (!post) {
+            return res.status(404).json({
+                status: 'fail',
+                data: {
+                    message: 'No post found'
+                }
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            data: {
+                post,
+                message: 'Post updated successfully'
+            }
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: 'error',
+            message: 'Internal server error'
+        });
     }
 }
